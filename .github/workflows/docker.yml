@@ -18,8 +18,7 @@ jobs:
         steps:
             - uses: actions/checkout@v2
               with:
-                  repository: "simonmicro/Pritunl-Fake-API"  # so we don't need to mirror things ourselves
-                  lfs: false
+                  repository: "regulad/Pritunl-Fake-API"  # so we don't need to mirror things ourselves
             - name: Build image
               run: docker build ./docker --file ./docker/Dockerfile --tag $IMAGE_NAME
             - name: Log into registry
