@@ -1,5 +1,8 @@
 name: Deploy Docker Image
 on:
+  push:
+    paths:
+      - ".github/workflows/docker.yml"
   schedule:
     - cron: "0 0 * * 0"
   workflow_dispatch:
@@ -7,9 +10,8 @@ env:
   IMAGE_NAME: pritunlfakeapi
 jobs:
   push:
-    name: Push image
+    name: Build & push image
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
     permissions:
       contents: read
       packages: write
