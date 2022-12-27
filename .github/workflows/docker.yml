@@ -1,44 +1,41 @@
 name: Deploy Docker Image
 on:
-  push:
-    paths:
-      - ".github/workflows/docker.yml"
-  schedule:
-    - cron: "0 0 * * 0"
-  workflow_dispatch:
+    push:
+        paths:
+            - ".github/workflows/docker.yml"
+    schedule:
+        - cron: "0 0 * * 0"
+    workflow_dispatch:
 env:
-  IMAGE_NAME: pritunlfakeapi
+    IMAGE_NAME: pritunlfakeapi
 jobs:
-  push:
-    name: Build & push image
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          repository: "simonmicro/Pritunl-Fake-API"  # so we don't need to mirror things ourselves
-          lfs: true
-
-      - name: Build image
-        run: docker build ./docker --file ./docker/Dockerfile --tag $IMAGE_NAME
-
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Push image
-        run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
-          # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+    push:
+        name: Build & push image
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  repository: "simonmicro/Pritunl-Fake-API"  # so we don't need to mirror things ourselves
+                  lfs: false
+            - name: Build image
+              run: docker build ./docker --file ./docker/Dockerfile --tag $IMAGE_NAME
+            - name: Log into registry
+              run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            - name: Push image
+              run: |
+                  IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+                  # Change all uppercase to lowercase
+                  IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+                  # Strip git ref prefix from version
+                  VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+                  # Strip "v" prefix from tag name
+                  [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+                  # Use Docker `latest` tag convention
+                  [ "$VERSION" == "master" ] && VERSION=latest
+                  echo IMAGE_ID=$IMAGE_ID
+                  echo VERSION=$VERSION
+                  docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+                  docker push $IMAGE_ID:$VERSION
