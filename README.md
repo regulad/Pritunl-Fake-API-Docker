@@ -1,0 +1,1 @@
+This repository automatically builds [`simonmicro/Pritunl-Fake-API`](https://github.com/simonmicro/Pritunl-Fake-API) and publishes it on GitHub Pacakges.
